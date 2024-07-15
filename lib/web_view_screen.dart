@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -81,6 +82,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("loadingPercentage");
+    print(loadingPercentage);
     return WillPopScope(
       onWillPop: () async {
         if (await _controller.canGoBack()) {
@@ -93,7 +96,21 @@ class _WebViewScreenState extends State<WebViewScreen> {
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
-          child: WebViewWidget(controller: _controller),
+          child: Column(
+            children: [
+              loadingPercentage != 100
+                  ? LinearProgressIndicator(
+                      backgroundColor: Colors.red,
+                      color: Colors.blue,
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Colors.blueAccent,
+                      ),
+                      value: loadingPercentage.toDouble(),
+                    )
+                  : const SizedBox(),
+              Expanded(child: WebViewWidget(controller: _controller)),
+            ],
+          ),
         ),
       ),
     );
@@ -116,12 +133,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(title),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back),
+        icon: const Icon(Icons.arrow_back),
         onPressed: onBackPressed,
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.refresh),
+          icon: const Icon(Icons.refresh),
           onPressed: onReloadPressed,
         ),
       ],
@@ -129,5 +146,5 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
